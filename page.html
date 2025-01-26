@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Imseeh Jewelry - A World of Elegance</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #000;
+            color: #fff;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px;
+            background: #000;
+            position: relative;
+        }
+
+        header img {
+            width: 80px;
+            height: auto;
+        }
+
+        .intro-text {
+            margin-top: 5px;
+            font-size: 1.2rem;
+            color: #ffff;
+        }
+
+        .basket {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #333, #666);
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .basket:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.5);
+        }
+
+        .basket-count {
+            font-size: 0.9rem;
+            color: #fff;
+        }
+
+        .categories,
+        .products-container {
+            margin: 20px auto;
+            max-width: 1200px;
+            padding: 10px;
+        }
+
+        .categories {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+
+        .category-card {
+            background: linear-gradient(135deg, #222, #444);
+            border: 1px solid #333;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            width: 250px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .category-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 10px rgba(0,0,0,0.5);
+        }
+
+        .category-card h2 {
+            font-size: 1.5rem;
+            margin: 0;
+            color: #fff;
+        }
+
+        .products-container {
+            display: none;
+        }
+
+        .products {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .product-card {
+            background: linear-gradient(135deg, #222, #444);
+            border-radius: 15px;
+            width: 250px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .product-card img {
+            width: 100%;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .product-card img:hover {
+            transform: scale(1.2);
+        }
+
+        .product-card img.enlarged {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(2);
+            z-index: 1000;
+            max-width: 80%;
+            max-height: 80%;
+            box-shadow: 0 0 50px rgba(0,0,0,0.7);
+            cursor: zoom-out;
+        }
+
+        .product-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 10px rgba(0,0,0,0.5);
+        }
+
+        .product-name {
+            font-size: 1.2rem;
+            margin: 10px 0;
+            color: #fff;
+        }
+
+        .product-price {
+            font-size: 1rem;
+            color: #bfae80;
+        }
+
+        .add-to-basket {
+            background: linear-gradient(135deg, #444, #666);
+            color: #fff;
+            padding: 10px 15px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 3px 5px rgba(0,0,0,0.3);
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .add-to-basket:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+            background: linear-gradient(135deg, #555, #777);
+        }
+
+        .back-button {
+            display: block;
+            margin: 20px auto;
+            background: linear-gradient(135deg, #444, #666);
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            text-align: center;
+            width: 200px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-transform: uppercase;
+            font-weight: bold;
+            box-shadow: 0 3px 5px rgba(0,0,0,0.3);
+        }
+
+        .back-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+            background: linear-gradient(135deg, #555, #777);
+        }
+
+        .basket-panel {
+            display: none;
+            background: linear-gradient(135deg, #111, #333);
+            color: #fff;
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 100%;
+            padding: 20px;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5);
+            overflow-y: auto;
+            z-index: 1500;
+        }
+
+        .basket-panel h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #444;
+            padding-bottom: 10px;
+        }
+
+        .basket-panel-item {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .basket-panel-total {
+            margin-top: 20px;
+            font-size: 1.3rem;
+            color: #bfae80;
+        }
+
+        .preorder-button {
+            display: block;
+            background: linear-gradient(135deg, #f2d900, #ffe066);
+            color: #000;
+            padding: 10px;
+            border: none;
+            border-radius: 20px;
+            margin: 10px 0;
+            text-align: center;
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-transform: uppercase;
+            font-weight: bold;
+            box-shadow: 0 3px 5px rgba(0,0,0,0.3);
+        }
+
+        .preorder-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+            background: linear-gradient(135deg, #ffe066, #f2d900);
+        }
+
+        .close-basket {
+            background: linear-gradient(135deg, #444, #666);
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-transform: uppercase;
+            font-weight: bold;
+            box-shadow: 0 3px 5px rgba(0,0,0,0.3);
+        }
+
+        .close-basket:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+            background: linear-gradient(135deg, #555, #777);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="https://imseeh.com/wp-content/uploads/2023/11/logo-vertical-white.png" alt="Imseeh Jewelry Logo">
+        <p class="intro-text">A sanctuary of elegance, where dreams take form.</p>
+        <p class="intro-text">Order Form</p>
+        <div class="basket" onclick="toggleBasket()">
+            <span class="basket-count" id="basket-count">0</span>
+        </div>
+    </header>
+
+    <section class="categories">
+        <div class="category-card" onclick="showProducts('rings')">
+            <h2>Rings</h2>
+        </div>
+        <div class="category-card" onclick="showProducts('bracelets')">
+            <h2>Bracelets</h2>
+        </div>
+        <div class="category-card" onclick="showProducts('earrings')">
+            <h2>Earrings</h2>
+        </div>
+        <div class="category-card" onclick="showProducts('necklaces')">
+            <h2>Necklaces</h2>
+        </div>
+    </section>
+
+    <div class="products-container" id="products-container">
+        <button class="back-button" onclick="goBackToCategories()">Back to Categories</button>
+        <div id="products" class="products"></div>
+    </div>
+
+    <div class="basket-panel" id="basket-panel">
+        <h2>Your Basket</h2>
+        <div id="basket-items"></div>
+        <div class="basket-panel-total" id="basket-total">Total: $0</div>
+        <a class="preorder-button" href="https://wa.me/+905324722862" target="_blank">Place a Pre-Order</a>
+        <button class="close-basket" onclick="toggleBasket()">Close</button>
+    </div>
+
+    <script>
+        const productsData = {
+            rings: [
+                { name: "Diamond Ring 1", price: 1500, img: "https://i.pinimg.com/736x/2e/91/5b/2e915b1b8d49137b225a70490755edd8.jpg" },
+                { name: "Diamond Ring 2", price: 2200, img: "https://i.pinimg.com/736x/f1/6a/45/f16a4555cee4a0627c79e61dada24ef1.jpg" },
+            ],
+            bracelets: [
+                { name: "Diamond Bracelet 1", price: 1800, img: "https://i.pinimg.com/736x/d0/7c/2e/d07c2e9c64210f552524ac064165bd4e.jpg" },
+                { name: "Diamond Bracelet 2", price: 2500, img: "https://i.pinimg.com/736x/f8/8a/34/f88a34a62e212e1307b09af8b3ffa1c8.jpg" },
+            ],
+            earrings: [
+                { name: "Diamond Earring 1", price: 1200, img: "https://i.pinimg.com/736x/67/99/a3/6799a3a4a7ef592227dcec26e1071b05.jpg" },
+                { name: "Diamond Earring 2", price: 1800, img: "https://i.pinimg.com/736x/47/29/e0/4729e0ea7d9d6506fd7dcdc0cfdb2623.jpg" },
+            ],
+            necklaces: [
+                { name: "Diamond Necklace 1", price: 3200, img: "https://i.pinimg.com/736x/9c/72/a8/9c72a89a1d1e4fb3a901137317fc634d.jpg" },
+                { name: "Diamond Necklace 2", price: 4000, img: "https://i.pinimg.com/736x/48/5f/a1/485fa1c61041d987ad73afc4142fe28e.jpg" },
+            ],
+        };
+
+        let basket = [];
+
+        function showProducts(category) {
+            const productsDiv = document.getElementById("products");
+            productsDiv.innerHTML = productsData[category].map(product => `
+                <div class="product-card">
+                    <img src="${product.img}" alt="${product.name}" onclick="toggleImageSize(this)">
+                    <div class="product-name">${product.name}</div>
+                    <div class="product-price">$${product.price}</div>
+                    <button class="add-to-basket" onclick="addToBasket('${product.name}', ${product.price})">Add to Basket</button>
+                </div>
+            `).join("");
+
+            document.querySelector(".categories").style.display = "none";
+            document.getElementById("products-container").style.display = "block";
+        }
+
+        function toggleImageSize(img) {
+            img.classList.toggle('enlarged');
+            if (img.classList.contains('enlarged')) {
+                // Prevent scrolling when image is enlarged
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        function goBackToCategories() {
+            document.querySelector(".categories").style.display = "flex";
+            document.getElementById("products-container").style.display = "none";
+        }
+
+        function addToBasket(name, price) {
+            basket.push({ name, price });
+            updateBasket();
+        }
+
+        function updateBasket() {
+            const basketCount = document.getElementById("basket-count");
+            const basketItems = document.getElementById("basket-items");
+            const basketTotal = document.getElementById("basket-total");
+
+            basketCount.textContent = basket.length;
+            basketItems.innerHTML = basket.map(item => `
+                <div class="basket-panel-item">${item.name} - $${item.price}</div>
+            `).join("");
+            const total = basket.reduce((sum, item) => sum + item.price, 0);
+            basketTotal.textContent = `Total: $${total}`;
+        }
+
+        function toggleBasket() {
+            const basketPanel = document.getElementById("basket-panel");
+            basketPanel.style.display = basketPanel.style.display === "block" ? "none" : "block";
+        }
+
+        // Close enlarged image when clicking outside
+        document.addEventListener('click', function(event) {
+            const enlargedImages = document.querySelectorAll('.product-card img.enlarged');
+            enlargedImages.forEach(img => {
+                if (!img.contains(event.target)) {
+                    img.classList.remove('enlarged');
+                    document.body.style.overflow = 'auto';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
