@@ -1,0 +1,164 @@
+# File 1: vercel.json (Root of your project)
+
+{
+“version”: 2,
+“name”: “world-conflict-map”,
+“builds”: [
+{
+“src”: “*.html”,
+“use”: “@vercel/static”
+},
+{
+“src”: “*.css”,
+“use”: “@vercel/static”
+},
+{
+“src”: “*.js”,
+“use”: “@vercel/static”
+}
+],
+“routes”: [
+{
+“src”: “/(.*)”,
+“dest”: “/index.html”
+}
+],
+“headers”: [
+{
+“source”: “/(.*)”,
+“headers”: [
+{
+“key”: “X-Content-Type-Options”,
+“value”: “nosniff”
+},
+{
+“key”: “X-Frame-Options”,
+“value”: “DENY”
+},
+{
+“key”: “X-XSS-Protection”,
+“value”: “1; mode=block”
+}
+]
+}
+]
+}
+
+-----
+
+# File 2: package.json (Root of your project)
+
+{
+“name”: “world-conflict-map”,
+“version”: “1.0.0”,
+“description”: “Interactive World Conflict & Development Heat Map”,
+“main”: “index.html”,
+“scripts”: {
+“dev”: “vercel dev”,
+“build”: “echo ‘Static HTML project - no build needed’”,
+“start”: “vercel dev”
+},
+“keywords”: [“world”, “conflict”, “development”, “visualization”, “map”],
+“author”: “Your Name”,
+“license”: “MIT”,
+“devDependencies”: {
+“vercel”: “^32.0.0”
+}
+}
+
+-----
+
+# File 3: .gitignore (Root of your project)
+
+# Vercel
+
+.vercel
+
+# Node modules
+
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# OS generated files
+
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor directories and files
+
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+-----
+
+# File 4: README.md (Root of your project)
+
+# World Conflict & Development Heat Map
+
+An interactive visualization showing the correlation between geographic distance from conflict zones and development indices.
+
+## 🌍 Features
+
+- Interactive world map with conflict and development zones
+- Real-time data visualization with HDI scores
+- Mobile-responsive design
+- Touch-friendly interactions
+- Animated heat map effects
+
+## 🚀 Live Demo
+
+Visit: [Your Vercel URL will be here]
+
+## 📱 Mobile Optimized
+
+- Works on all devices (phones, tablets, desktop)
+- Touch gestures and interactions
+- Responsive layout that adapts to screen size
+- Landscape and portrait mode support
+
+## 🛠️ Tech Stack
+
+- Pure HTML5, CSS3, JavaScript
+- SVG for crisp vector graphics
+- CSS animations and transitions
+- Responsive design with media queries
+
+## 📊 Data Sources
+
+The visualization is based on:
+
+- Global Peace Index data
+- Human Development Index (HDI)
+- Historical conflict analysis
+- Geographic correlation studies
+
+## 🌟 Key Insights
+
+- Distance from Middle East conflict zones correlates with peace
+- Island nations and mountainous regions show higher development
+- Natural barriers provide protection leading to prosperity
+- The “Mesopotamian Paradox” - birthplace of civilization, center of conflict
+
+-----
+
+# File 5: index.html (Your main HTML file)
+
+# Rename your current HTML file to index.html or copy the content there
