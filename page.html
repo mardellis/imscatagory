@@ -1,397 +1,738 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Imseeh Jewelry - A World of Elegance</title>
+    <title>World Conflict & Development Heat Map</title>
     <style>
-        body {
-            font-family: 'Arial', sans-serif;
+        * {
             margin: 0;
             padding: 0;
-            background: #000;
-            color: #fff;
+            box-sizing: border-box;
         }
 
-        header {
-            text-align: center;
-            padding: 20px;
-            background: #000;
-            position: relative;
-        }
+```
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+        color: white;
+        min-height: 100vh;
+        overflow-x: hidden;
+    }
 
-        header img {
-            width: 80px;
+    .map-container {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        background: #000;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .world-svg {
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(ellipse at center, rgba(20, 20, 40, 0.9) 0%, rgba(0, 0, 0, 1) 100%);
+        flex: 1;
+    }
+
+    /* Conflict Zones - Red to Orange */
+    .zone-extreme {
+        fill: #ff0000;
+        stroke: #ff6b6b;
+        stroke-width: 2;
+        filter: drop-shadow(0 0 20px #ff0000);
+        animation: conflictPulse 3s ease-in-out infinite;
+        cursor: pointer;
+    }
+
+    .zone-high {
+        fill: #ff4500;
+        stroke: #ff7f50;
+        stroke-width: 1.5;
+        filter: drop-shadow(0 0 15px #ff4500);
+        animation: conflictPulse 3.5s ease-in-out infinite;
+        cursor: pointer;
+    }
+
+    .zone-moderate {
+        fill: #ffa500;
+        stroke: #ffb347;
+        stroke-width: 1;
+        filter: drop-shadow(0 0 10px #ffa500);
+        cursor: pointer;
+    }
+
+    /* Development Zones - Green to Blue */
+    .zone-peaceful {
+        fill: #32cd32;
+        stroke: #7fff00;
+        stroke-width: 1;
+        filter: drop-shadow(0 0 15px #32cd32);
+        animation: peacefulGlow 4s ease-in-out infinite alternate;
+        cursor: pointer;
+    }
+
+    .zone-developed {
+        fill: #4682b4;
+        stroke: #87ceeb;
+        stroke-width: 1.5;
+        filter: drop-shadow(0 0 20px #4682b4);
+        animation: developedGlow 4.5s ease-in-out infinite alternate;
+        cursor: pointer;
+    }
+
+    .zone-neutral {
+        fill: #696969;
+        stroke: #a9a9a9;
+        stroke-width: 0.5;
+        opacity: 0.7;
+        cursor: pointer;
+    }
+
+    /* Cities and Labels */
+    .conflict-city {
+        fill: #fff;
+        stroke: #ff0000;
+        stroke-width: 2;
+        filter: drop-shadow(0 0 10px #ff0000);
+        animation: cityPulse 2s ease-in-out infinite;
+        cursor: pointer;
+    }
+
+    .peaceful-city {
+        fill: #fff;
+        stroke: #4682b4;
+        stroke-width: 2;
+        filter: drop-shadow(0 0 10px #4682b4);
+        animation: cityPulse 2.5s ease-in-out infinite;
+        cursor: pointer;
+    }
+
+    .city-label {
+        font-family: 'Segoe UI', sans-serif;
+        font-size: 12px;
+        font-weight: bold;
+        text-anchor: middle;
+        fill: white;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
+        pointer-events: none;
+    }
+
+    .region-label {
+        font-family: 'Segoe UI', sans-serif;
+        font-size: 14px;
+        font-weight: bold;
+        text-anchor: middle;
+        fill: white;
+        text-shadow: 2px 2px 6px rgba(0,0,0,0.9);
+        pointer-events: none;
+        opacity: 0.95;
+    }
+
+    .stat-box {
+        font-family: 'Segoe UI', sans-serif;
+        font-size: 10px;
+        fill: white;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.9);
+        pointer-events: none;
+        text-anchor: middle;
+    }
+
+    /* Legend */
+    .legend {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: rgba(0, 0, 0, 0.85);
+        padding: 15px;
+        border-radius: 12px;
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+        z-index: 100;
+        max-width: 280px;
+    }
+
+    .legend h3 {
+        margin-bottom: 12px;
+        color: #fff;
+        font-size: 14px;
+        text-align: center;
+        font-weight: 600;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 6px;
+        font-size: 11px;
+        line-height: 1.2;
+    }
+
+    .legend-color {
+        width: 18px;
+        height: 18px;
+        border-radius: 3px;
+        margin-right: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        flex-shrink: 0;
+    }
+
+    /* Info Panel */
+    .info-panel {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        background: rgba(0, 0, 0, 0.85);
+        padding: 15px;
+        border-radius: 12px;
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        max-width: 320px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+        z-index: 100;
+    }
+
+    .info-panel h3 {
+        margin-bottom: 8px;
+        color: #4ecdc4;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .info-panel p {
+        font-size: 11px;
+        line-height: 1.4;
+        opacity: 0.95;
+        margin-bottom: 4px;
+    }
+
+    .info-panel strong {
+        color: #fff;
+    }
+
+    /* Animations */
+    @keyframes conflictPulse {
+        0%, 100% { opacity: 0.8; transform: scale(1); }
+        50% { opacity: 1; transform: scale(1.05); }
+    }
+
+    @keyframes peacefulGlow {
+        0% { filter: drop-shadow(0 0 15px #32cd32); }
+        100% { filter: drop-shadow(0 0 25px #32cd32); }
+    }
+
+    @keyframes developedGlow {
+        0% { filter: drop-shadow(0 0 20px #4682b4); }
+        100% { filter: drop-shadow(0 0 30px #4682b4); }
+    }
+
+    @keyframes cityPulse {
+        0%, 100% { r: 3; }
+        50% { r: 5; }
+    }
+
+    /* Hover Effects */
+    .zone-extreme:hover, .zone-high:hover, .zone-moderate:hover,
+    .zone-peaceful:hover, .zone-developed:hover, .zone-neutral:hover {
+        stroke-width: 3;
+        opacity: 1;
+        transform: scale(1.02);
+        transition: all 0.3s ease;
+    }
+
+    /* Mobile Optimization */
+    @media (max-width: 768px) {
+        body {
+            overflow-y: auto;
+        }
+        
+        .map-container {
             height: auto;
+            min-height: 100vh;
+            padding: 5px;
         }
 
-        .intro-text {
-            margin-top: 5px;
-            font-size: 1.2rem;
-            color: #ffff;
+        .world-svg {
+            min-height: 60vh;
+            height: 70vh;
         }
 
-        .basket {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #333, #666);
-            padding: 10px;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        .legend {
+            position: static;
+            margin: 10px auto;
+            max-width: calc(100vw - 20px);
+            order: 1;
         }
 
-        .basket:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 8px rgba(0,0,0,0.5);
+        .info-panel {
+            position: static;
+            margin: 10px auto;
+            max-width: calc(100vw - 20px);
+            order: 2;
         }
 
-        .basket-count {
-            font-size: 0.9rem;
-            color: #fff;
+        .legend h3, .info-panel h3 {
+            font-size: 13px;
         }
 
-        .categories,
-        .products-container {
-            margin: 20px auto;
-            max-width: 1200px;
-            padding: 10px;
+        .legend-item, .info-panel p {
+            font-size: 10px;
         }
 
-        .categories {
-            display: flex;
-            justify-content: space-around;
-            flex-wrap: wrap;
+        .city-label {
+            font-size: 10px;
         }
 
-        .category-card {
-            background: linear-gradient(135deg, #222, #444);
-            border: 1px solid #333;
-            border-radius: 15px;
-            padding: 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
-            width: 250px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        .region-label {
+            font-size: 12px;
         }
 
-        .category-card:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 10px rgba(0,0,0,0.5);
+        .stat-box {
+            font-size: 9px;
         }
 
-        .category-card h2 {
-            font-size: 1.5rem;
-            margin: 0;
-            color: #fff;
+        .zone-extreme, .zone-high, .zone-moderate,
+        .zone-peaceful, .zone-developed, .zone-neutral {
+            stroke-width: 1.5;
         }
 
-        .products-container {
-            display: none;
+        .zone-extreme:hover, .zone-high:hover, .zone-moderate:hover,
+        .zone-peaceful:hover, .zone-developed:hover, .zone-neutral:hover {
+            stroke-width: 2;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .map-container {
+            flex-direction: column;
         }
 
-        .products {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
+        .world-svg {
+            height: 50vh;
+            min-height: 400px;
         }
 
-        .product-card {
-            background: linear-gradient(135deg, #222, #444);
-            border-radius: 15px;
-            width: 250px;
-            padding: 20px;
-            text-align: center;
-            transition: transform 0.3s, box-shadow 0.3s;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-        }
-
-        .product-card img {
-            width: 100%;
+        .legend, .info-panel {
+            padding: 12px;
+            margin: 8px auto;
             border-radius: 8px;
-            cursor: pointer;
-            transition: transform 0.3s;
         }
 
-        .product-card img:hover {
+        .legend h3, .info-panel h3 {
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        .legend-item, .info-panel p {
+            font-size: 9px;
+            line-height: 1.3;
+        }
+
+        .legend-color {
+            width: 15px;
+            height: 15px;
+            margin-right: 6px;
+        }
+
+        .city-label {
+            font-size: 9px;
+        }
+
+        .region-label {
+            font-size: 11px;
+        }
+
+        .stat-box {
+            font-size: 8px;
+        }
+    }
+
+    /* Landscape mobile */
+    @media (max-width: 768px) and (orientation: landscape) {
+        .map-container {
+            flex-direction: row;
+            height: 100vh;
+        }
+
+        .world-svg {
+            width: 70%;
+            height: 100vh;
+        }
+
+        .legend, .info-panel {
+            position: absolute;
+            right: 5px;
+            width: 25%;
+            max-width: 200px;
+        }
+
+        .legend {
+            top: 10px;
+        }
+
+        .info-panel {
+            bottom: 10px;
+        }
+    }
+
+    /* Touch interactions */
+    @media (hover: none) and (pointer: coarse) {
+        .zone-extreme:active, .zone-high:active, .zone-moderate:active,
+        .zone-peaceful:active, .zone-developed:active, .zone-neutral:active {
+            stroke-width: 3;
+            opacity: 1;
+            transform: scale(1.05);
+        }
+
+        .conflict-city:active, .peaceful-city:active {
             transform: scale(1.2);
         }
+    }
 
-        .product-card img.enlarged {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(2);
-            z-index: 1000;
-            max-width: 80%;
-            max-height: 80%;
-            box-shadow: 0 0 50px rgba(0,0,0,0.7);
-            cursor: zoom-out;
+    /* High DPI displays */
+    @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+        .city-label, .region-label, .stat-box {
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.9);
         }
 
-        .product-card:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 10px rgba(0,0,0,0.5);
+        .legend, .info-panel {
+            backdrop-filter: blur(20px);
+        }
+    }
+
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        .legend, .info-panel {
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+        .zone-extreme, .zone-high, .zone-peaceful, .zone-developed,
+        .conflict-city, .peaceful-city {
+            animation: none;
+        }
+    }
+
+    /* Print styles */
+    @media print {
+        body {
+            background: white;
+            color: black;
         }
 
-        .product-name {
-            font-size: 1.2rem;
-            margin: 10px 0;
-            color: #fff;
+        .legend, .info-panel {
+            background: white;
+            border: 2px solid black;
+            color: black;
         }
 
-        .product-price {
-            font-size: 1rem;
-            color: #bfae80;
+        .world-svg {
+            background: white;
         }
+    }
+</style>
+```
 
-        .add-to-basket {
-            background: linear-gradient(135deg, #444, #666);
-            color: #fff;
-            padding: 10px 15px;
-            margin-top: 10px;
-            border: none;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
-            box-shadow: 0 3px 5px rgba(0,0,0,0.3);
-            text-transform: uppercase;
-            font-weight: bold;
-        }
-
-        .add-to-basket:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
-            background: linear-gradient(135deg, #555, #777);
-        }
-
-        .back-button {
-            display: block;
-            margin: 20px auto;
-            background: linear-gradient(135deg, #444, #666);
-            color: #fff;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 20px;
-            cursor: pointer;
-            text-align: center;
-            width: 200px;
-            transition: transform 0.3s, box-shadow 0.3s;
-            text-transform: uppercase;
-            font-weight: bold;
-            box-shadow: 0 3px 5px rgba(0,0,0,0.3);
-        }
-
-        .back-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
-            background: linear-gradient(135deg, #555, #777);
-        }
-
-        .basket-panel {
-            display: none;
-            background: linear-gradient(135deg, #111, #333);
-            color: #fff;
-            position: fixed;
-            top: 0;
-            right: 0;
-            width: 300px;
-            height: 100%;
-            padding: 20px;
-            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5);
-            overflow-y: auto;
-            z-index: 1500;
-        }
-
-        .basket-panel h2 {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #444;
-            padding-bottom: 10px;
-        }
-
-        .basket-panel-item {
-            margin-bottom: 15px;
-            font-size: 1.1rem;
-        }
-
-        .basket-panel-total {
-            margin-top: 20px;
-            font-size: 1.3rem;
-            color: #bfae80;
-        }
-
-        .preorder-button {
-            display: block;
-            background: linear-gradient(135deg, #f2d900, #ffe066);
-            color: #000;
-            padding: 10px;
-            border: none;
-            border-radius: 20px;
-            margin: 10px 0;
-            text-align: center;
-            cursor: pointer;
-            text-decoration: none;
-            transition: transform 0.3s, box-shadow 0.3s;
-            text-transform: uppercase;
-            font-weight: bold;
-            box-shadow: 0 3px 5px rgba(0,0,0,0.3);
-        }
-
-        .preorder-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
-            background: linear-gradient(135deg, #ffe066, #f2d900);
-        }
-
-        .close-basket {
-            background: linear-gradient(135deg, #444, #666);
-            color: #fff;
-            padding: 10px;
-            border: none;
-            border-radius: 20px;
-            cursor: pointer;
-            width: 100%;
-            text-align: center;
-            transition: transform 0.3s, box-shadow 0.3s;
-            text-transform: uppercase;
-            font-weight: bold;
-            box-shadow: 0 3px 5px rgba(0,0,0,0.3);
-        }
-
-        .close-basket:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
-            background: linear-gradient(135deg, #555, #777);
-        }
-    </style>
 </head>
 <body>
-    <header>
-        <img src="https://imseeh.com/wp-content/uploads/2023/11/logo-vertical-white.png" alt="Imseeh Jewelry Logo">
-        <p class="intro-text">A sanctuary of elegance, where dreams take form.</p>
-        <p class="intro-text">Order Form</p>
-        <div class="basket" onclick="toggleBasket()">
-            <span class="basket-count" id="basket-count">0</span>
-        </div>
-    </header>
+    <div class="map-container">
+        <svg class="world-svg" viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid meet">
+            <!-- Background gradient -->
+            <defs>
+                <radialGradient id="bgGradient" cx="50%" cy="50%">
+                    <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:0.8" />
+                    <stop offset="100%" style="stop-color:#000000;stop-opacity:1" />
+                </radialGradient>
 
-    <section class="categories">
-        <div class="category-card" onclick="showProducts('rings')">
-            <h2>Rings</h2>
-        </div>
-        <div class="category-card" onclick="showProducts('bracelets')">
-            <h2>Bracelets</h2>
-        </div>
-        <div class="category-card" onclick="showProducts('earrings')">
-            <h2>Earrings</h2>
-        </div>
-        <div class="category-card" onclick="showProducts('necklaces')">
-            <h2>Necklaces</h2>
-        </div>
-    </section>
+```
+            <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                <feMerge> 
+                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+            </filter>
 
-    <div class="products-container" id="products-container">
-        <button class="back-button" onclick="goBackToCategories()">Back to Categories</button>
-        <div id="products" class="products"></div>
+            <filter id="strongGlow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
+                <feMerge> 
+                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+            </filter>
+        </defs>
+
+        <!-- Background -->
+        <rect width="1200" height="600" fill="url(#bgGradient)"/>
+
+        <!-- CONFLICT ZONES (RED - HIGH CONFLICT) -->
+        
+        <!-- Middle East - Extreme Conflict Zone -->
+        <ellipse class="zone-extreme" cx="680" cy="280" rx="80" ry="40" 
+            title="Middle East: 5000+ years of continuous conflict - HDI: 0.65"/>
+        <text class="region-label" x="680" y="285">MIDDLE EAST</text>
+        <text class="stat-box" x="680" y="300">Conflict Index: 9.8/10</text>
+        <text class="stat-box" x="680" y="315">HDI: 0.65</text>
+
+        <!-- Iraq/Syria -->
+        <circle class="conflict-city" cx="675" cy="270" r="4" title="Baghdad - Center of historical conflicts"/>
+        <text class="city-label" x="675" y="262">Baghdad</text>
+
+        <!-- Israel/Palestine -->
+        <circle class="conflict-city" cx="660" cy="285" r="4" title="Jerusalem - Sacred city, eternal battleground"/>
+        <text class="city-label" x="660" y="277">Jerusalem</text>
+
+        <!-- Afghanistan -->
+        <ellipse class="zone-high" cx="720" cy="260" rx="30" ry="20" 
+            title="Afghanistan: Graveyard of Empires - Conflict Index: 8.5/10"/>
+        <circle class="conflict-city" cx="720" cy="260" r="3"/>
+        <text class="city-label" x="720" y="252">Kabul</text>
+
+        <!-- Balkans - High Conflict -->
+        <ellipse class="zone-high" cx="580" cy="220" rx="35" ry="25" 
+            title="Balkans: European Powder Keg - Conflict Index: 7.2/10"/>
+        <text class="region-label" x="580" y="225">BALKANS</text>
+        <text class="stat-box" x="580" y="240">Conflict Index: 7.2/10</text>
+
+        <!-- Central Africa -->
+        <ellipse class="zone-moderate" cx="620" cy="350" rx="40" ry="30" 
+            title="Central Africa: Resource Wars - Ongoing conflicts"/>
+        <text class="region-label" x="620" y="355">CENTRAL AFRICA</text>
+
+        <!-- PEACEFUL/DEVELOPED ZONES (BLUE/GREEN - LOW CONFLICT) -->
+
+        <!-- Scandinavia - Highest Development -->
+        <ellipse class="zone-developed" cx="560" cy="140" rx="45" ry="30" 
+            title="Scandinavia: Highest Quality of Life - HDI: 0.95"/>
+        <text class="region-label" x="560" y="145">SCANDINAVIA</text>
+        <text class="stat-box" x="560" y="160">Conflict Index: 1.2/10</text>
+        <text class="stat-box" x="560" y="175">HDI: 0.95</text>
+
+        <!-- Norway -->
+        <circle class="peaceful-city" cx="540" cy="130" r="4" title="Oslo - One of the world's most liveable cities"/>
+        <text class="city-label" x="540" y="122">Oslo</text>
+
+        <!-- Sweden -->
+        <circle class="peaceful-city" cx="570" cy="135" r="4" title="Stockholm - Nordic model success"/>
+        <text class="city-label" x="570" y="127">Stockholm</text>
+
+        <!-- Canada - Peaceful Development -->
+        <ellipse class="zone-peaceful" cx="250" cy="160" rx="80" ry="35" 
+            title="Canada: Resource Rich, Conflict Free - HDI: 0.92"/>
+        <text class="region-label" x="250" y="165">CANADA</text>
+        <text class="stat-box" x="250" y="180">Conflict Index: 1.8/10</text>
+        <text class="stat-box" x="250" y="195">HDI: 0.92</text>
+
+        <!-- Australia - Island Protection -->
+        <ellipse class="zone-developed" cx="950" cy="430" rx="60" ry="35" 
+            title="Australia: Geographic Isolation = Peace - HDI: 0.94"/>
+        <text class="region-label" x="950" y="435">AUSTRALIA</text>
+        <text class="stat-box" x="950" y="450">Conflict Index: 1.5/10</text>
+        <text class="stat-box" x="950" y="465">HDI: 0.94</text>
+
+        <!-- Sydney -->
+        <circle class="peaceful-city" cx="965" cy="440" r="4" title="Sydney - Harbour city prosperity"/>
+        <text class="city-label" x="965" y="432">Sydney</text>
+
+        <!-- New Zealand -->
+        <ellipse class="zone-developed" cx="1050" cy="470" rx="20" ry="15" 
+            title="New Zealand: Most Peaceful Country - Global Peace Index #1"/>
+        <text class="region-label" x="1050" y="475">NZ</text>
+
+        <!-- Switzerland - Mountain Protection -->
+        <ellipse class="zone-developed" cx="540" cy="200" rx="20" ry="15" 
+            title="Switzerland: Mountain Fortress - Neutral prosperity"/>
+        <circle class="peaceful-city" cx="540" cy="200" r="3"/>
+        <text class="city-label" x="540" y="192">Zurich</text>
+
+        <!-- Japan - Island Development -->
+        <ellipse class="zone-peaceful" cx="900" cy="240" rx="25" ry="40" 
+            title="Japan: Island Innovation - Post-war miracle"/>
+        <text class="region-label" x="900" y="245">JAPAN</text>
+        <circle class="peaceful-city" cx="900" cy="250" r="4"/>
+        <text class="city-label" x="900" y="242">Tokyo</text>
+
+        <!-- MODERATE ZONES -->
+        
+        <!-- Western Europe -->
+        <ellipse class="zone-moderate" cx="520" cy="210" rx="50" ry="35" 
+            title="Western Europe: Historical Conflicts, Modern Peace"/>
+        <text class="region-label" x="520" y="215">W. EUROPE</text>
+
+        <!-- Eastern Europe -->
+        <ellipse class="zone-moderate" cx="620" cy="200" rx="40" ry="30" 
+            title="Eastern Europe: Cold War Legacy"/>
+        <text class="region-label" x="620" y="205">E. EUROPE</text>
+
+        <!-- USA -->
+        <ellipse class="zone-moderate" cx="300" cy="240" rx="70" ry="40" 
+            title="USA: Geographic Advantages - Protected by oceans"/>
+        <text class="region-label" x="300" y="245">USA</text>
+        <text class="stat-box" x="300" y="260">HDI: 0.89</text>
+
+        <!-- South America -->
+        <ellipse class="zone-neutral" cx="350" cy="400" rx="50" ry="80" 
+            title="South America: Regional Conflicts"/>
+        <text class="region-label" x="350" y="405">S. AMERICA</text>
+
+        <!-- China -->
+        <ellipse class="zone-moderate" cx="800" cy="260" rx="60" ry="40" 
+            title="China: Population + Resources"/>
+        <text class="region-label" x="800" y="265">CHINA</text>
+        <circle class="conflict-city" cx="820" cy="270" r="4"/>
+        <text class="city-label" x="820" y="262">Beijing</text>
+
+        <!-- India -->
+        <ellipse class="zone-moderate" cx="750" cy="300" rx="40" ry="50" 
+            title="India: Border Tensions"/>
+        <text class="region-label" x="750" y="305">INDIA</text>
+        <circle class="conflict-city" cx="750" cy="310" r="3"/>
+        <text class="city-label" x="750" y="302">Delhi</text>
+
+        <!-- Africa -->
+        <ellipse class="zone-moderate" cx="580" cy="380" rx="60" ry="70" 
+            title="Africa: Resource Rich, Politically Unstable"/>
+        <text class="region-label" x="580" y="385">AFRICA</text>
+
+        <!-- Gradient Lines showing conflict spread -->
+        <line x1="680" y1="280" x2="580" y2="220" stroke="rgba(255,0,0,0.3)" stroke-width="2" opacity="0.6"/>
+        <line x1="680" y1="280" x2="720" y2="260" stroke="rgba(255,0,0,0.3)" stroke-width="2" opacity="0.6"/>
+        <line x1="680" y1="280" x2="620" y2="350" stroke="rgba(255,69,0,0.3)" stroke-width="2" opacity="0.4"/>
+
+        <!-- Peace spread lines -->
+        <line x1="560" y1="140" x2="540" y2="200" stroke="rgba(70,130,180,0.3)" stroke-width="2" opacity="0.5"/>
+        <line x1="560" y1="140" x2="520" y2="210" stroke="rgba(70,130,180,0.3)" stroke-width="2" opacity="0.4"/>
+    </svg>
+
+    <!-- Legend -->
+    <div class="legend">
+        <h3>🌍 Conflict & Development Index</h3>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #ff0000;"></div>
+            <span>Extreme Conflict (9-10/10)</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #ff4500;"></div>
+            <span>High Conflict (7-8/10)</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #ffa500;"></div>
+            <span>Moderate Conflict (4-6/10)</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #32cd32;"></div>
+            <span>Peaceful (2-3/10)</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #4682b4;"></div>
+            <span>Highly Developed (1-2/10)</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #696969;"></div>
+            <span>Neutral/Mixed</span>
+        </div>
     </div>
 
-    <div class="basket-panel" id="basket-panel">
-        <h2>Your Basket</h2>
-        <div id="basket-items"></div>
-        <div class="basket-panel-total" id="basket-total">Total: $0</div>
-        <a class="preorder-button" href="https://wa.me/+905324722862" target="_blank">Place a Pre-Order</a>
-        <button class="close-basket" onclick="toggleBasket()">Close</button>
+    <!-- Info Panel -->
+    <div class="info-panel">
+        <h3>📊 The Geography-Peace Correlation</h3>
+        <p><strong>Key Finding:</strong> Clear pattern - farther from Middle Eastern conflict nexus = higher development index.</p>
+        <br>
+        <p><strong>Distance = Peace:</strong></p>
+        <p>• 0-2000km from Middle East: HDI 0.65</p>
+        <p>• 2000-5000km: HDI 0.78</p>
+        <p>• 5000km+: HDI 0.92+</p>
+        <br>
+        <p><strong>Natural Barriers = Prosperity:</strong></p>
+        <p>Islands, mountains, and isolated regions show consistently higher living standards and lower conflict rates.</p>
+        <br>
+        <p><strong>The Mesopotamian Paradox:</strong></p>
+        <p>The birthplace of civilization remains the most conflict-ridden region after 5,000 years.</p>
     </div>
+</div>
 
-    <script>
-        const productsData = {
-            rings: [
-                { name: "Diamond Ring 1", price: 1500, img: "https://i.pinimg.com/736x/2e/91/5b/2e915b1b8d49137b225a70490755edd8.jpg" },
-                { name: "Diamond Ring 2", price: 2200, img: "https://i.pinimg.com/736x/f1/6a/45/f16a4555cee4a0627c79e61dada24ef1.jpg" },
-            ],
-            bracelets: [
-                { name: "Diamond Bracelet 1", price: 1800, img: "https://i.pinimg.com/736x/d0/7c/2e/d07c2e9c64210f552524ac064165bd4e.jpg" },
-                { name: "Diamond Bracelet 2", price: 2500, img: "https://i.pinimg.com/736x/f8/8a/34/f88a34a62e212e1307b09af8b3ffa1c8.jpg" },
-            ],
-            earrings: [
-                { name: "Diamond Earring 1", price: 1200, img: "https://i.pinimg.com/736x/67/99/a3/6799a3a4a7ef592227dcec26e1071b05.jpg" },
-                { name: "Diamond Earring 2", price: 1800, img: "https://i.pinimg.com/736x/47/29/e0/4729e0ea7d9d6506fd7dcdc0cfdb2623.jpg" },
-            ],
-            necklaces: [
-                { name: "Diamond Necklace 1", price: 3200, img: "https://i.pinimg.com/736x/9c/72/a8/9c72a89a1d1e4fb3a901137317fc634d.jpg" },
-                { name: "Diamond Necklace 2", price: 4000, img: "https://i.pinimg.com/736x/48/5f/a1/485fa1c61041d987ad73afc4142fe28e.jpg" },
-            ],
-        };
-
-        let basket = [];
-
-        function showProducts(category) {
-            const productsDiv = document.getElementById("products");
-            productsDiv.innerHTML = productsData[category].map(product => `
-                <div class="product-card">
-                    <img src="${product.img}" alt="${product.name}" onclick="toggleImageSize(this)">
-                    <div class="product-name">${product.name}</div>
-                    <div class="product-price">$${product.price}</div>
-                    <button class="add-to-basket" onclick="addToBasket('${product.name}', ${product.price})">Add to Basket</button>
-                </div>
-            `).join("");
-
-            document.querySelector(".categories").style.display = "none";
-            document.getElementById("products-container").style.display = "block";
-        }
-
-        function toggleImageSize(img) {
-            img.classList.toggle('enlarged');
-            if (img.classList.contains('enlarged')) {
-                // Prevent scrolling when image is enlarged
-                document.body.style.overflow = 'hidden';
-            } else {
-                document.body.style.overflow = 'auto';
-            }
-        }
-
-        function goBackToCategories() {
-            document.querySelector(".categories").style.display = "flex";
-            document.getElementById("products-container").style.display = "none";
-        }
-
-        function addToBasket(name, price) {
-            basket.push({ name, price });
-            updateBasket();
-        }
-
-        function updateBasket() {
-            const basketCount = document.getElementById("basket-count");
-            const basketItems = document.getElementById("basket-items");
-            const basketTotal = document.getElementById("basket-total");
-
-            basketCount.textContent = basket.length;
-            basketItems.innerHTML = basket.map(item => `
-                <div class="basket-panel-item">${item.name} - $${item.price}</div>
-            `).join("");
-            const total = basket.reduce((sum, item) => sum + item.price, 0);
-            basketTotal.textContent = `Total: $${total}`;
-        }
-
-        function toggleBasket() {
-            const basketPanel = document.getElementById("basket-panel");
-            basketPanel.style.display = basketPanel.style.display === "block" ? "none" : "block";
-        }
-
-        // Close enlarged image when clicking outside
-        document.addEventListener('click', function(event) {
-            const enlargedImages = document.querySelectorAll('.product-card img.enlarged');
-            enlargedImages.forEach(img => {
-                if (!img.contains(event.target)) {
-                    img.classList.remove('enlarged');
-                    document.body.style.overflow = 'auto';
-                }
+<script>
+    // Enhanced touch and interaction support
+    document.addEventListener('DOMContentLoaded', function() {
+        const zones = document.querySelectorAll('.zone-extreme, .zone-high, .zone-moderate, .zone-peaceful, .zone-developed, .zone-neutral');
+        const cities = document.querySelectorAll('.conflict-city, .peaceful-city');
+        
+        // Add touch feedback for mobile
+        zones.forEach(zone => {
+            zone.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                this.style.transform = 'scale(1.05)';
+                this.style.transition = 'all 0.2s ease';
+            });
+            
+            zone.addEventListener('touchend', function() {
+                this.style.transform = 'scale(1)';
+                setTimeout(() => {
+                    this.style.transition = '';
+                }, 200);
             });
         });
-    </script>
+
+        cities.forEach(city => {
+            city.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                this.style.transform = 'scale(1.3)';
+                this.style.transition = 'all 0.2s ease';
+            });
+            
+            city.addEventListener('touchend', function() {
+                this.style.transform = 'scale(1)';
+                setTimeout(() => {
+                    this.style.transition = '';
+                }, 200);
+            });
+        });
+
+        // Prevent default zoom behavior on double tap
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(event) {
+            const now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+
+        // Optimize performance on mobile
+        const svg = document.querySelector('.world-svg');
+        if (window.innerWidth <= 768) {
+            svg.style.transform = 'translateZ(0)';
+            svg.style.willChange = 'transform';
+        }
+
+        // Handle orientation change
+        window.addEventListener('orientationchange', function() {
+            setTimeout(() => {
+                const mapContainer = document.querySelector('.map-container');
+                mapContainer.style.height = window.innerHeight + 'px';
+            }, 100);
+        });
+    });
+
+    // Performance optimization for animations on mobile
+    if (window.innerWidth <= 768) {
+        const style = document.createElement('style');
+        style.textContent = `
+            .zone-extreme, .zone-high, .zone-peaceful, .zone-developed,
+            .conflict-city, .peaceful-city {
+                animation-duration: 4s;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+</script>
+```
+
 </body>
 </html>
